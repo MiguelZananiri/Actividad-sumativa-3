@@ -41,7 +41,7 @@ public class teatroMoro {
     public static ventaDeEntradas realizarVenta() {
         System.out.println("");
 
-        String seleccionarAsientoLetra, confirmarEdad, confirmarPago;
+        String seleccionarAsientoLetra, confirmarEdad;
         int seleccionarAsientoNumero, pagaBase = 9000, descuento = 0, pagaTotal = 0, idCliente = -1;
         int idReservaRNG = (int) (Math.random() * 1001);
         Set<String> letrasValidas = new HashSet<>(Arrays.asList("A", "B", "C", "D"));
@@ -128,29 +128,33 @@ public class teatroMoro {
         pagaTotal = pagaBase - (pagaBase * descuento / 100);
 
         System.out.println("");
-        System.out.println("¿Desea confirmar el pago? SI/NO");
+        System.out.println("Ingrese su ID de cliente: ");
 
         while (true) {
-            confirmarPago = scanner.nextLine().trim().toLowerCase();
-            if (confirmarPago.equals("si")) {
-                System.out.println("Introduzca su ID de cliente(rut)");
-                while (true) {
-                    idCliente = scanner.nextInt();
-                    if (idCliente >= 10000000 && idCliente <= 999999999) {
-                        System.out.println("ID de cliente confirmado");
-                        System.out.println("Pago confirmado");
-                        break;
-                    } else {
-                        System.out.println("ID de cliente invalido");
-                    }
+            idCliente = scanner.nextInt();
+        
+            if (idCliente < 10000000 || idCliente > 999999999) {
+                System.out.println("ID de cliente inválido. Intente nuevamente.");
+                continue;
+            }
+        
+            boolean idYaRegistrado = false;
+            for (ventaDeEntradas entrada : listaEntradas) {
+                if (entrada.idCliente == idCliente) {
+                    idYaRegistrado = true;
+                    break;
                 }
-                break;
-            } else if (confirmarPago.equals("no")) {
-                System.out.println("Pago cancelado");
+            }
+        
+            if (idYaRegistrado) {
+                System.out.println("Este ID ya tiene una venta registrada. No puede registrar otra.");
             } else {
-                System.out.println("Confirme con un si o no");
+                System.out.println("ID de cliente confirmado.");
+                break;
             }
         }
+
+        System.out.println("Venta registrada.");
 
         idVenta++;
         asientosOcupados.add(asientoSeleccionado);
@@ -182,7 +186,7 @@ public class teatroMoro {
 
     public void actualizarVenta() {
         System.out.println("Ingrese el ID de venta a actualizar:");
-        int idActualizar, seleccionarAsientoNumero = 0, descuento = 0, pagaBase = 9000, pagaTotal = 0;
+        int idActualizar, seleccionarAsientoNumero = 0, descuento = 0, pagaBase = 9000;
         String seleccionarAsientoLetra, confirmarEdad;
         Set<String> letrasValidas = new HashSet<>(Arrays.asList("A", "B", "C", "D"));
         scanner.nextLine();
@@ -242,13 +246,12 @@ public class teatroMoro {
                 }
             }
 
-            asientosOcupados.remove(ventaAActualizar.asiento); 
-            asientosOcupados.add(nuevoAsiento); 
+            asientosOcupados.remove(ventaAActualizar.asiento);
+            asientosOcupados.add(nuevoAsiento);
             ventaAActualizar.asiento = nuevoAsiento;
 
             System.out.println("Asiento actualizado exitosamente.");
-        }
-        else if (opcion == 2) {
+        } else if (opcion == 2) {
             while (true) {
                 System.out.println("Ingrese el nuevo tipo de público:");
                 System.out.println("Estudiante o tercera edad");
@@ -257,15 +260,12 @@ public class teatroMoro {
                 if (confirmarEdad.equals("estudiante")) {
                     System.out.println("Eres estudiante");
                     descuento = 10;
-                }
-                else if (confirmarEdad.equals("tercera edad")) {
+                } else if (confirmarEdad.equals("tercera edad")) {
                     System.out.println("Eres tercera edad");
                     descuento = 15;
-                }
-                else if (confirmarEdad.equals("publico general") || confirmarEdad.equals("ninguno")) {
+                } else if (confirmarEdad.equals("publico general") || confirmarEdad.equals("ninguno")) {
                     System.out.println("Eres publico general");
-                }
-                else {
+                } else {
                     System.out.println("Opcion no valida");
                     continue;
                 }
@@ -310,15 +310,15 @@ public class teatroMoro {
                     break;
 
                 case 3:
-                for (ventaDeEntradas entrada : listaEntradas) {
-                    System.out.println("");
-                    entrada.mostrarInfo();
-                }
-                teatro.actualizarVenta(); 
-                break;
+                    for (ventaDeEntradas entrada : listaEntradas) {
+                        System.out.println("");
+                        entrada.mostrarInfo();
+                    }
+                    teatro.actualizarVenta();
+                    break;
 
                 case 4:
-                System.out.println("Saliendo...");
+                    System.out.println("Saliendo...");
                     break;
 
                 default:
